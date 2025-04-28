@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+
 from datetime import datetime, timedelta
 import calendar
 
