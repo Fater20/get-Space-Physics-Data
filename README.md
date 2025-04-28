@@ -1,8 +1,12 @@
-# Geomagnetic Data Fetcher (Updated 2025.04.28)
+# Space Physics Data Fetcher (Updated 2025.04.28)
+本项目用于快速获取下载各类空间科学数据。
 
-本项目用于从日本京都大学地磁观测中心（WDC for Geomagnetism, Kyoto）自动爬取 **Dst 指数** 和 **AE 指数** 数据，支持按月查询，输出为标准的 `DataFrame` 并可保存为 `.csv` 文件。(更多指数支持更新中...)
 
 ## ✨ 功能简介
+
+### Geomagnetic Data 
+
+该部分用于从日本京都大学地磁观测中心（WDC for Geomagnetism, Kyoto）自动爬取 **Dst 指数** 和 **AE 指数** 数据，支持按月查询，输出为标准的 `DataFrame` 并可保存为 `.csv` 文件。(更多指数支持更新中...)
 
 - **获取 Dst 指数**（1小时分辨率）
   - 根据年份自动选择最终版、临时版或实时版数据源。
