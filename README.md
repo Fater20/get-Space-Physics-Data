@@ -16,7 +16,7 @@
 ## 🌆 安装依赖
 
 ```bash
-pip install requests beautifulsoup4 pandas numpy tqdm
+pip install -r requirements.txt
 ```
 
 ## 📂 文件结构
@@ -72,7 +72,7 @@ getGeomagneticData(time, index_type='Dst')
 - 如遇到请求失败（如返回404错误），请检查：
   - 查询时间段是否已有数据发布。
   - 查询时间是否在支持的数据范围内。
-- 对于 AE 数据，2020年以前为临时数据（Provisional），2020年及以后为实时数据（Realtime）。
+- 对于 AE 数据，目前没有找到2020年数据的下载源。
 
 ## 📊 示例输出
 
