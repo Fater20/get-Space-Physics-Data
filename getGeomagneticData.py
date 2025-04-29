@@ -86,8 +86,13 @@ def getDstData(time):
     # data_df.to_csv('input/dst_data/'+str(year)+str(month).zfill(2)+'_dst.csv', index=False)
 
 
-# input: '2023-01'
 def getRealtimeAEData(time):
+    '''
+    获取指定时间的AE数据
+    时间分辨率为1分钟
+    :param time: str, 时间格式为YYYY-MM
+    :return: DataFrame, 包含时间和AE数据
+    '''
     index_list = ["AE", "AL", "AU", "AO"]
     df = pd.DataFrame()
     for i, index_name in enumerate(index_list):
