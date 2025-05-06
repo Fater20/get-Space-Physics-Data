@@ -6,12 +6,14 @@
 
 ### Geomagnetic Data 
 
-该部分用于从日本京都大学地磁观测中心（WDC for Geomagnetism, Kyoto）自动爬取 **Dst 指数** 和 **AE 指数** 数据，支持按月查询，输出为标准的 `DataFrame` 并可保存为 `.csv` 文件。(更多指数支持更新中...)
+该部分用于从日本京都大学地磁观测中心（WDC for Geomagnetism, Kyoto）自动爬取 **Dst 指数** 和 **AE 指数** 数据,从亥姆霍兹德国地理研究中心（GFZ）自动爬取 **Kp 指数** 和 **ap 指数** 数据。支持按月查询，输出为标准的 `DataFrame` 并可保存为 `.csv` 文件。(更多指数支持更新中...)
 
 - **获取 Dst 指数**（1小时分辨率）
   - 根据年份自动选择最终版、临时版或实时版数据源。
 - **获取 AE 指数（AE/AL/AU/AO）**（1分钟分辨率）
   - 根据年份选择实时数据或临时数据接口。
+- **获取 Kp 和 ap指数** （3小时分辨率）
+  - 根据查询时间寻找指定数据。
 - **支持多种指数组合查询**
   - 可以通过传入列表一次性下载多种地磁指数。
 - **统一输出格式**
@@ -63,16 +65,16 @@ getGeomagneticData(time, index_type='Dst')
 | 参数 | 类型 | 描述 |
 | :--- | :--- | :--- |
 | `time` | `str` | 查询时间（格式：`YYYY-MM`） |
-| `index_type` | `str` 或 `list` | 要查询的地磁指数，可选 `'Dst'`、`'AE'`，也可以是它们的列表 |
+| `index_type` | `str` 或 `list` | 要查询的地磁指数，可选 `'Dst'`、`'AE'`、 `'Kpap'`，也可以是它们的列表 |
 
 **返回值：**
 - `pandas.DataFrame`，包含以下字段：
   - `Time`（UTC时间）
-  - 以及对应的地磁指数数据（如 `Dst`、`AE`、`AL`、`AU`、`AO`）
+  - 以及对应的地磁指数数据（如 `Dst`、`AE`、`AL`、`AU`、`AO`、`Kp`、`ap`）
 
 ## ⚠️ 注意事项
 
-- 数据源来自 [京都大学WDC地磁中心](https://wdc.kugi.kyoto-u.ac.jp/wdc/Sec3.html)，不同时间段使用不同数据接口，存在数据发布延迟。
+- 数据源来自 [京都大学WDC地磁中心](https://wdc.kugi.kyoto-u.ac.jp/wdc/Sec3.html)，[GFZ](https://kp.gfz.de/)不同时间段使用不同数据接口，存在数据发布延迟。
 - 如遇到请求失败（如返回404错误），请检查：
   - 查询时间段是否已有数据发布。
   - 查询时间是否在支持的数据范围内。
@@ -100,4 +102,4 @@ getGeomagneticData(time, index_type='Dst')
 ## 📝 License
 
 本项目仅用于学术交流与学习用途。  
-数据版权归 [WDC for Geomagnetism, Kyoto](https://wdc.kugi.kyoto-u.ac.jp/wdc/Sec3.html) 所有。
+数据版权归 [WDC for Geomagnetism, Kyoto](https://wdc.kugi.kyoto-u.ac.jp/wdc/Sec3.html), [GFZ](https://kp.gfz.de/) 所有。

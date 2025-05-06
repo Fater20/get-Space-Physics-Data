@@ -134,6 +134,7 @@ def getProvisionalAEData(time):
     #     Tens=200&Year=0&Month=01&Day_Tens=0&Days=0&Hour=00&min=00\
     #     &Dur_Day_Tens=00&Dur_Day=2&Dur_Hour=00&Dur_Min=00\
     #     &Image+Type=GIF&COLOR=COLOR&AE+Sensitivity=0&ASY%2FSYM++Sensitivity=0&Output=AE&Out+format=WDC"
+    # 为简化，请求的时间范围均为31天，获取31天的数据后再进行时间段筛选
     url = "https://wdc.kugi.kyoto-u.ac.jp/cgi-bin/aeasy-cgi?"
     url += f"Tens={Tens}&Year={Year}&Month={Month}&Day_Tens=00&Days=0&Hour=00&min=00"
     url += f"&Dur_Day_Tens=03&Dur_Day=1&Dur_Hour=00&Dur_Min=00"
@@ -206,6 +207,63 @@ def getAEData(time):
     
     return df
 
+def getKpapData(time):
+    '''
+    获取指定时间的Kp数据
+    时间分辨率为3小时
+    :param time: str, 时间格式为YYYY-MM
+    :return: DataFrame, 包含时间和Kp, ap数据
+    '''
+    url = "https://kp.gfz.de/app/files/Kp_ap_since_1932.txt"
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(f"请求失败，状态码：{response.status_code}")
+    text = response.text
+    # 跳过第一个字符为'#'的行
+    lines = text.split('\n')
+    lines = [line for line in lines if not line.startswith('#')]
+    # start time: 1932-01-01 00:00:00
+    start_time = datetime(1932, 1, 1, 0, 0, 0)
+    find_time = datetime.strptime(time, '%Y-%m')
+    # estimate the line number of the find time
+    # 1 line = 3 hours
+    # 1 day = 24 hours
+    # 1 month = 30 days
+    # 1 year = 365 days
+    # 1 month = 30 days = 30 * 24 hours = 720 hours
+    # 1 year = 365 days = 365 * 24 hours = 8760 hours
+    # 1 month = 30 days = 30 * 24 / 3 lines = 240 lines
+    # 1 year = 365 days = 365 * 24 / 3 lines = 2920 lines
+    findtime_startindex = int((find_time - start_time).total_seconds() / 3 / 3600)
+    month_days = calendar.monthrange(find_time.year, find_time.month)[1]
+    findtime_endindex = int((find_time + timedelta(days=month_days) - start_time).total_seconds() / 3 / 3600)
+    # 读取数据
+    # The format for each line is (i stands for integer, f for float):
+    #iiii ii ii ff.f ff.ff fffff.fffff fffff.fffff ff.fff iiii i
+    # The parameters in each line are:
+    #YYYY MM DD hh.h hh._m        days      days_m     Kp   ap D
+    #2023 12 01 00.0 01.50 33572.00000 33572.06250  4.333   32 2
+    records = []
+    for line in lines[findtime_startindex:findtime_endindex]:
+        # 解析数据
+        year = int(line[0:4])
+        month = int(line[5:7])
+        day = int(line[8:10])
+        hour = int(line[11:13])
+        Kp = float(line[46:52])
+        ap = int(line[53:57])
+        D = int(line[58:59])
+        # 计算时间
+        timestamp = datetime(year, month, day, hour)
+        records.append([timestamp, Kp, ap, D])
+    # 转换为DataFrame
+    df = pd.DataFrame(records, columns=['Time', 'Kp', 'ap', 'D'])
+    # 将时间戳转换为datetime格式
+    df['Time'] = pd.to_datetime(df['Time'])
+    return df
+    
+
+
 def getGeomagneticData(time, index_type='Dst'):
     '''
     获取指定时间的Dst和AE数据
@@ -223,6 +281,8 @@ def getGeomagneticData(time, index_type='Dst'):
             df_tmp = getDstData(time)
         elif idx == 'AE':
             df_tmp = getAEData(time)
+        elif idx == 'Kpap':
+            df_tmp = getKpapData(time)
         else:
             raise ValueError(f"Index Type '{idx}' not supported.")
         # 合并数据
@@ -230,8 +290,6 @@ def getGeomagneticData(time, index_type='Dst'):
             df = df_tmp
         else:
             df = pd.merge(df, df_tmp, on='Time', how='outer')
-    # 将时间戳转换为datetime格式
-    df['Time'] = pd.to_datetime(df['Time'])
     
     return df
 
@@ -241,5 +299,5 @@ if __name__ == "__main__":
     # If there is no data for the time period you entered or a request error occurs, 
     # first check the description of the data time range on the website.
     time = '2023-12'
-    Index_df = getGeomagneticData(time, index_type='AE')
+    Index_df = getGeomagneticData(time, index_type='Kpap')
     Index_df.to_csv(f"Index_{time}.csv", index=False)
