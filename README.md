@@ -74,7 +74,7 @@ getGeomagneticData(time, index_type='Dst')
 
 #### 太阳风相关数据获取函数
 ```python
-getGeomagneticData(time, index_type='Dst')
+getSolarwindData(time, mission='ACE', interval='1h')
 ```
 
 | 参数 | 类型 | 描述 |
