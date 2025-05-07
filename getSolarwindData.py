@@ -36,7 +36,7 @@ def getACEdata_1h(year, month):
     # UT Date   Time  Julian   of the   ----------------  GSM Coordinates ---------------
     # YR MO DA  HHMM    Day      Day    S     Bx      By      Bz      Bt     Lat.   Long.
     #------------------------------------------------------------------------------------
-    df2.columns = ['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Long']
+    df2.columns = ['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Lng']
     
     df = pd.merge(df1, df2, on=['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay'])
     
@@ -45,7 +45,7 @@ def getACEdata_1h(year, month):
     df["HHMM"] = df["HHMM"].astype(str).str.zfill(4)
     df["Time"] = pd.to_datetime(df[['year', 'month', 'day', 'HHMM']].astype(str).agg(''.join, axis=1), format='%Y%m%d%H%M')
     df = df.drop(columns=['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay'])
-    df = df[['Time', 'S1','ProtonDensity', 'BulkSpeed', 'IonTemperature', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Long']]
+    df = df[['Time', 'S1','ProtonDensity', 'BulkSpeed', 'IonTemperature', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Lng']]
     
     return df
 
@@ -72,7 +72,7 @@ def getACEdata_1m(year, month, day):
     # UT Date   Time  Julian   of the   ----------------  GSM Coordinates ---------------
     # YR MO DA  HHMM    Day      Day    S     Bx      By      Bz      Bt     Lat.   Long.
     #------------------------------------------------------------------------------------
-    df2.columns = ['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Long']
+    df2.columns = ['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Lng']
     
     df = pd.merge(df1, df2, on=['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay'])
     
@@ -81,7 +81,7 @@ def getACEdata_1m(year, month, day):
     df["HHMM"] = df["HHMM"].astype(str).str.zfill(4)
     df["Time"] = pd.to_datetime(df[['year', 'month', 'day', 'HHMM']].astype(str).agg(''.join, axis=1), format='%Y%m%d%H%M')
     df = df.drop(columns=['year', 'month', 'day', 'HHMM', 'ModifiedJulianDay', 'SecondsoftheDay'])
-    df = df[['Time', 'S1','ProtonDensity', 'BulkSpeed', 'IonTemperature', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Long']]
+    df = df[['Time', 'S1','ProtonDensity', 'BulkSpeed', 'IonTemperature', 'S2', 'Bx', 'By', 'Bz', 'Bt', 'Lat', 'Lng']]
     
     return df
 
@@ -110,6 +110,7 @@ def getSolarwindData(time, mission='ACE', interval='1h'):
             for day in range(1, calendar.monthrange(year, month)[1] + 1):
                 # Get data for each day in the month
                 try:
+                    print(f"Retrieving data for {year}-{month:02d}-{day:02d}...")
                     df_day = getACEdata_1m(year, month, day)
                     df = pd.concat([df, df_day], ignore_index=True)
                 except Exception as e:
